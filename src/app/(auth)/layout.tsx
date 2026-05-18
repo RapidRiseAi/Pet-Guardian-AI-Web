@@ -14,7 +14,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
         </Link>
         <div>
           <p className="max-w-xl text-5xl font-semibold leading-tight">
-            Your pet's care, history, and trusted access in one place.
+            Your pet&apos;s care, history, and trusted access in one place.
           </p>
           <p className="mt-5 max-w-lg text-muted-foreground">
             A calm, permission-aware home for routines, records, reminders, QR sharing, and
