@@ -15,7 +15,7 @@ const links = [
 export function MarketingShell({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen">
-      <header className="safe-top sticky top-0 z-50 border-b border-border bg-background/78 px-4 pb-3 backdrop-blur-xl">
+      <header className="safe-top sticky top-0 z-50 border-b border-border bg-background/[0.78] px-4 pb-3 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
           <Link href="/" className="focus-ring flex items-center gap-3 rounded-2xl">
             <span className="flex size-10 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
