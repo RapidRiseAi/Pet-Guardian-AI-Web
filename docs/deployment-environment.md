@@ -19,9 +19,26 @@ The Next.js app needs these variables in Vercel for production and preview deplo
 | `POSTHOG_KEY` | Optional | Product analytics. |
 | `CRON_SECRET` | Later background jobs | Protects cron routes. |
 
-## Supabase migrations in GitHub CI
+Vercel variables let the deployed Next.js app talk to Supabase. They do **not** apply database migrations by themselves.
 
-Supabase SQL migrations do **not** need to be placed in Vercel. They must be applied with the Supabase CLI or a Supabase-connected CI job. If you run migrations from GitHub Actions, store these as GitHub repository secrets:
+## Supabase GitHub integration versus GitHub Actions
+
+There are two different ways migrations can be pushed from GitHub:
+
+### Option A: Supabase Dashboard GitHub integration
+
+If you connected this repository from **Supabase Dashboard > Project Settings > Integrations > GitHub Integration**, Supabase reads the committed `supabase/` directory from GitHub. Configure the integration with:
+
+- **Repository:** this repo.
+- **Working directory:** `.` because the `supabase/` folder is at the repository root.
+- **Automatic branching:** optional; creates Supabase preview branches for GitHub branches/PRs.
+- **Deploy to production:** enable this if you want migrations applied automatically when changes land on your configured production branch.
+
+With this managed Supabase integration, you usually do **not** need GitHub repository secrets just to run migrations. The target database is the Supabase project where you enabled the integration, regardless of which Google account owns that Supabase project. New migration files in `supabase/migrations` are what Supabase applies; `supabase/seed.sql` is for preview/local seed data and is not merged into production by default.
+
+### Option B: Your own GitHub Actions workflow
+
+This repo currently does not include a GitHub Actions workflow that runs `supabase db push`. If you add one later, store these as GitHub repository secrets:
 
 | Secret | Purpose |
 | --- | --- |

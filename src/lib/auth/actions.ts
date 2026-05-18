@@ -37,15 +37,16 @@ export async function signInAction(formData: FormData) {
 
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  const signedInUser = data.user;
 
-  if (error || !data.user) {
+  if (error || !signedInUser) {
     authRedirect('/login', { error: error?.message ?? 'Could not sign in.', next });
   }
 
   const { data: profile } = await supabase
     .from('profiles')
     .select('role, onboarding_completed_at')
-    .eq('id', data.user.id)
+    .eq('id', signedInUser.id)
     .maybeSingle();
 
   if (!profile?.onboarding_completed_at) redirect('/onboarding');
