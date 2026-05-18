@@ -830,8 +830,6 @@ on conflict (id) do update set
   allowed_mime_types = excluded.allowed_mime_types;
 
 -- Enable RLS -----------------------------------------------------------------
-alter table storage.objects enable row level security;
-
 alter table public.profiles enable row level security;
 alter table public.households enable row level security;
 alter table public.household_members enable row level security;

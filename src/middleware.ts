@@ -18,7 +18,7 @@ function isProtectedPath(pathname: string) {
 }
 
 export async function middleware(request: NextRequest) {
-  let response = NextResponse.next({ request });
+  const response = NextResponse.next({ request });
 
   type CookieToSet = { name: string; value: string; options?: Parameters<typeof response.cookies.set>[2] };
 
