@@ -1,38 +1,50 @@
 export const designTokens = {
   colors: {
+    ink: '#041010',
     background: '#081111',
+    backgroundSoft: '#0b1515',
     surface: '#101a1a',
     surfaceRaised: '#162222',
+    surfaceStrong: '#1a2928',
     border: '#243333',
+    borderStrong: '#35504d',
     text: '#f3fbf9',
     mutedText: '#9fb1ad',
+    subtleText: '#708580',
     primary: '#4dd8bd',
+    primarySoft: '#a7f3e4',
     primaryDeep: '#0f766e',
     success: '#55d68c',
     warning: '#f5b84b',
     danger: '#f27272',
+    info: '#8fb8ff',
   },
   spacing: {
     pageX: 'clamp(1rem, 3vw, 2rem)',
     sectionY: 'clamp(3rem, 8vw, 7rem)',
+    contentGap: 'clamp(1rem, 2.5vw, 2rem)',
     mobileTapTarget: '44px',
+    bottomNavHeight: '5.75rem',
   },
   radii: {
     sm: '0.75rem',
     md: '1rem',
     lg: '1.25rem',
     xl: '1.75rem',
+    '2xl': '2rem',
     pill: '999px',
   },
   shadows: {
     soft: '0 18px 60px rgba(0, 0, 0, 0.28)',
     panel: '0 24px 80px rgba(0, 0, 0, 0.34)',
     glow: '0 0 48px rgba(77, 216, 189, 0.18)',
+    lift: '0 20px 48px rgba(0, 0, 0, 0.22)',
   },
   containers: {
     content: '72rem',
     wide: '88rem',
     narrow: '42rem',
+    admin: '96rem',
   },
   motion: {
     fast: '140ms',
@@ -44,6 +56,17 @@ export const designTokens = {
     display: 'clamp(2.8rem, 8vw, 6.5rem)',
     h1: 'clamp(2.3rem, 6vw, 5rem)',
     h2: 'clamp(1.8rem, 4vw, 3rem)',
+    h3: 'clamp(1.25rem, 2vw, 1.75rem)',
     body: '1rem',
+    caption: '0.8125rem',
+  },
+  roles: {
+    owner: { label: 'Owner', accent: '#4dd8bd', density: 'comfortable' },
+    sitter: { label: 'Sitter', accent: '#55d68c', density: 'comfortable' },
+    clinic: { label: 'Clinic', accent: '#8fb8ff', density: 'operational' },
+    admin: { label: 'Admin', accent: '#f5b84b', density: 'operational' },
   },
 } as const;
+
+export type DesignTokens = typeof designTokens;
+export type RoleToken = keyof typeof designTokens.roles;

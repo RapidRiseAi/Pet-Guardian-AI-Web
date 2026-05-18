@@ -22,6 +22,7 @@ const config: Config = {
         muted: {
           DEFAULT: 'hsl(var(--muted))',
           foreground: 'hsl(var(--muted-foreground))',
+          subtle: 'hsl(var(--subtle-foreground))',
         },
         accent: {
           DEFAULT: 'hsl(var(--accent))',
@@ -55,6 +56,7 @@ const config: Config = {
         glow: 'var(--shadow-glow)',
         soft: 'var(--shadow-soft)',
         panel: 'var(--shadow-panel)',
+        lift: 'var(--shadow-lift)',
       },
       fontFamily: {
         sans: ['var(--font-sans)', 'Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
