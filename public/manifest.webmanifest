@@ -1,0 +1,21 @@
+{
+  "name": "PetGuardian AI",
+  "short_name": "PetGuardian",
+  "description": "Premium pet care coordination, reminders, records, QR access, and trusted sharing.",
+  "start_url": "/app",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#081111",
+  "theme_color": "#081111",
+  "categories": ["health", "productivity", "lifestyle"],
+  "icons": [
+    { "src": "/icons/icon-192.svg", "sizes": "192x192", "type": "image/svg+xml", "purpose": "any" },
+    {
+      "src": "/icons/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
