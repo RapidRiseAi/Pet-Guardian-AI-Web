@@ -14,7 +14,6 @@
   --secondary-foreground: 165 35% 97%;
   --muted: 180 13% 16%;
   --muted-foreground: 165 11% 66%;
-  --subtle-foreground: 166 9% 48%;
   --accent: 169 64% 58%;
   --accent-foreground: 178 45% 7%;
   --primary: 169 64% 58%;
@@ -36,8 +35,6 @@
   --shadow-soft: 0 18px 60px rgba(0, 0, 0, 0.28);
   --shadow-panel: 0 24px 80px rgba(0, 0, 0, 0.34);
   --shadow-glow: 0 0 48px rgba(77, 216, 189, 0.18);
-  --shadow-lift: 0 20px 48px rgba(0, 0, 0, 0.22);
-  --safe-bottom-nav: max(5.75rem, calc(5.25rem + env(safe-area-inset-bottom)));
 }
 
 * {
@@ -82,29 +79,4 @@ body {
 
 .focus-ring:focus-visible {
   outline-color: hsl(var(--ring));
-}
-
-
-@layer components {
-  .app-surface {
-    background: linear-gradient(180deg, hsl(var(--card) / 0.94), hsl(var(--background) / 0.92));
-  }
-
-  .premium-panel {
-    border: 1px solid hsl(var(--border));
-    background: hsl(var(--card) / 0.92);
-    box-shadow: var(--shadow-soft);
-  }
-
-  .operational-grid {
-    display: grid;
-    gap: clamp(1rem, 2vw, 1.5rem);
-  }
-
-  @media (min-width: 1024px) {
-    .operational-grid {
-      grid-template-columns: minmax(0, 1fr) 22rem;
-      align-items: start;
-    }
-  }
 }
