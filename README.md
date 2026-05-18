@@ -82,11 +82,12 @@ npm install
 npm run dev
 ```
 
-Then open <http://localhost:3000>.
+Then open <http://localhost:3000>. Use `npm run env:check` to verify required runtime variables before running production-like flows.
 
 Useful checks:
 
 ```bash
+npm run env:check
 npm run lint
 npm run typecheck
 npm run build
@@ -109,6 +110,7 @@ Auth:
 
 - `/login`
 - `/signup`
+- `/link/whatsapp`
 
 App:
 
@@ -147,7 +149,7 @@ App:
 
 ## PWA notes
 
-The app includes a manifest, theme color, placeholder icons, safe-area spacing utilities, and an app shell designed for installable mobile use. A service worker can be added later once offline caching requirements are defined; the initial scaffold avoids Workbox/`next-pwa` so Vercel deployments stay simple and warning-free.
+The app includes a manifest, theme color, placeholder icons, safe-area spacing utilities, an install prompt component, and an app shell designed for installable mobile use. A service worker can be added later once offline caching requirements are defined; the initial scaffold avoids Workbox/`next-pwa` so Vercel deployments stay simple and warning-free.
 
 ## Implementation guardrails
 
@@ -156,3 +158,7 @@ The app includes a manifest, theme color, placeholder icons, safe-area spacing u
 - Enforce permissions at the database and server layer, not only in client navigation.
 - Keep assistant and WhatsApp access behind secure endpoints that resolve verified user context and role scope.
 - Every production route should eventually include loading, empty, error, success, and permission-denied states.
+
+## Prompt 1 completion check
+
+See `docs/prompt-1-foundation-checklist.md` for the foundation audit checklist and manual verification steps before continuing to Prompt 2.
