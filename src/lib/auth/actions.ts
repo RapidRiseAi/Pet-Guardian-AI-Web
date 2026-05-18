@@ -41,6 +41,7 @@ export async function signInAction(formData: FormData) {
 
   if (error || !signedInUser) {
     authRedirect('/login', { error: error?.message ?? 'Could not sign in.', next });
+    throw new Error('Unreachable sign-in redirect.');
   }
 
   const { data: profile } = await supabase
