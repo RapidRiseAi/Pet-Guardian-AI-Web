@@ -73,7 +73,7 @@ Optional or integration-specific:
 - `CRON_SECRET`
 - `STORAGE_BUCKET_PUBLIC_URL`
 
-Environment validation is permissive in development so the shell can be reviewed before external services are connected, and strict in production so missing critical keys fail fast.
+Environment validation helpers are available for runtime server actions, API routes, middleware, and integration entry points. They are intentionally not called from global layouts during static builds, so Vercel can build scaffold and marketing routes before Supabase keys are configured.
 
 ## Local development
 

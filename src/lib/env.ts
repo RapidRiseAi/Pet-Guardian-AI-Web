@@ -4,20 +4,26 @@ const requiredServerEnv = ['SUPABASE_SERVICE_ROLE_KEY', 'APP_BASE_URL'] as const
 export type PublicEnvKey = (typeof requiredPublicEnv)[number];
 export type ServerEnvKey = (typeof requiredServerEnv)[number];
 
-function missing(keys: readonly string[]) {
+export function getMissingEnv(keys: readonly string[]) {
   return keys.filter((key) => !process.env[key]);
 }
 
+/**
+ * Validate public runtime configuration from server actions, API routes,
+ * middleware, or integration entry points. Do not call this from module scope
+ * in global layouts because Next.js imports layouts while collecting static
+ * build data for routes such as /_not-found.
+ */
 export function assertPublicEnv() {
-  const missingKeys = missing(requiredPublicEnv);
-  if (missingKeys.length > 0 && process.env.NODE_ENV === 'production') {
+  const missingKeys = getMissingEnv(requiredPublicEnv);
+  if (missingKeys.length > 0) {
     throw new Error(`Missing required public environment variables: ${missingKeys.join(', ')}`);
   }
 }
 
 export function assertServerEnv() {
-  const missingKeys = missing([...requiredPublicEnv, ...requiredServerEnv]);
-  if (missingKeys.length > 0 && process.env.NODE_ENV === 'production') {
+  const missingKeys = getMissingEnv([...requiredPublicEnv, ...requiredServerEnv]);
+  if (missingKeys.length > 0) {
     throw new Error(`Missing required server environment variables: ${missingKeys.join(', ')}`);
   }
 }

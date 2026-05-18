@@ -1,9 +1,6 @@
 import type { ReactNode } from 'react';
 import type { Metadata, Viewport } from 'next';
-import { assertPublicEnv } from '@/lib/env';
 import './globals.css';
-
-assertPublicEnv();
 
 export const metadata: Metadata = {
   title: {
