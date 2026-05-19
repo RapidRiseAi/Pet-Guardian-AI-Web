@@ -1,12 +1,4 @@
-import { EmptyState } from '@/components/ui/states';
-
+import { Card } from '@/components/ui/card';
 export default function Page() {
-  return (
-    <EmptyState
-      title="Content settings"
-      description="Legal copy, notification templates, and system copy placeholders will be prepared here."
-      actionHref="/app"
-      actionLabel="Back to dashboard"
-    />
-  );
+  return <div className="space-y-4"><h1 className="text-3xl font-semibold">Content settings</h1><Card><p className="font-semibold">Notification templates monitor</p><p className="text-sm text-muted-foreground">Template registry and legal copy settings placeholder for operations team.</p></Card></div>;
 }
