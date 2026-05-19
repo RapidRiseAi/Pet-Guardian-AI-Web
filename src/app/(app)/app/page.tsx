@@ -1,44 +1,28 @@
 import { Badge } from '@/components/ui/badge';
 import { ButtonLink } from '@/components/ui/button';
 import { Card, GlassCard } from '@/components/ui/card';
-import { PetProfileCard, ReminderCard, StatTile, TimelineItem } from '@/components/ui/primitives';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 
-export default function AppPage() {
+export default async function AppPage() {
+  const supabase = await createSupabaseServerClient();
+  const [{ count: reminderCount }, { count: requestCount }, { count: grantCount }, { data: pets }, { data: recent }] = await Promise.all([
+    supabase.from('reminders').select('id', { count: 'exact', head: true }).in('status', ['scheduled', 'overdue']).is('deleted_at', null),
+    supabase.from('access_requests').select('id', { count: 'exact', head: true }).eq('state', 'pending'),
+    supabase.from('access_grants').select('id', { count: 'exact', head: true }).eq('status', 'active'),
+    supabase.from('pets').select('id,name,species,summary').is('deleted_at', null).order('updated_at', { ascending: false }).limit(3),
+    supabase.from('audit_logs').select('id,action,created_at').order('created_at', { ascending: false }).limit(4),
+  ]);
+
   return (
     <div className="space-y-6">
-      <section className="grid gap-4 lg:grid-cols-[1fr_0.9fr]">
-        <GlassCard>
-          <Badge tone="success">Owner command center</Badge>
-          <h1 className="mt-4 text-4xl font-semibold tracking-[-0.04em]">Today&apos;s care, reminders, and trusted access.</h1>
-          <p className="mt-3 max-w-2xl text-muted-foreground">Review upcoming reminders, pending requests, and recent care updates without leaving your home workspace.</p>
-          <div className="mt-6 grid gap-3 sm:grid-cols-2">
-            <ButtonLink href="/app/pets/new">Add first pet</ButtonLink>
-            <ButtonLink href="/app/assistant" variant="secondary">Open assistant</ButtonLink>
-          </div>
-        </GlassCard>
-        <PetProfileCard name="Max" details="Medication reminder at 18:00 • QR ready" status="Protected" />
-      </section>
-
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatTile label="Reminders" value="4" detail="Due this week" />
-        <StatTile label="Pending requests" value="2" detail="Clinic approvals" tone="warning" />
-        <StatTile label="Active grants" value="3" detail="Sitter + clinic" tone="success" />
-        <StatTile label="Documents" value="12" detail="Secure files" />
-      </section>
-
-      <section className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
-        <Card className="space-y-3">
-          <h2 className="text-xl font-semibold">Upcoming reminders</h2>
-          <ReminderCard />
-          <ButtonLink href="/app/reminders" variant="secondary">Manage reminders</ButtonLink>
-        </Card>
-        <Card className="space-y-4">
-          <h2 className="text-xl font-semibold">Recent timeline</h2>
-          <TimelineItem title="Clinic access request pending for Max" meta="Access" tone="warning" />
-          <TimelineItem title="Evening feeding reminder acknowledged" meta="Reminder" tone="success" />
-          <TimelineItem title="QR access card reviewed" meta="Security" />
-        </Card>
-      </section>
+      <GlassCard>
+        <Badge tone="success">Owner command center</Badge>
+        <h1 className="mt-4 text-4xl font-semibold tracking-[-0.04em]">Today&apos;s care, reminders, and trusted access.</h1>
+        <div className="mt-6 grid gap-3 sm:grid-cols-2"><ButtonLink href="/app/pets/new">Add first pet</ButtonLink><ButtonLink href="/app/assistant" variant="secondary">Open assistant</ButtonLink></div>
+      </GlassCard>
+      <Card><p className="font-semibold">Reminders: {reminderCount ?? 0} • Pending requests: {requestCount ?? 0} • Active grants: {grantCount ?? 0}</p></Card>
+      <Card><h2 className="text-xl font-semibold">Pet profiles</h2>{(pets ?? []).length ? (pets ?? []).map((p)=><p key={p.id} className="text-sm text-muted-foreground">{p.name} • {p.species}{p.summary ? ` • ${p.summary}` : ''}</p>) : <p className="text-sm text-muted-foreground">No pets yet. Add your first pet to begin.</p>}</Card>
+      <Card><h2 className="text-xl font-semibold">Recent system activity</h2>{(recent ?? []).map((r)=><p key={r.id} className="text-sm text-muted-foreground">{r.action} • {new Date(r.created_at).toLocaleString()}</p>)}</Card>
     </div>
   );
 }

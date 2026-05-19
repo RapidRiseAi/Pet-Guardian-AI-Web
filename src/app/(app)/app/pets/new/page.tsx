@@ -3,11 +3,18 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 
-export default function Page() {
+type PageProps = { searchParams?: Promise<Record<string, string | string[] | undefined>> };
+const first = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
+
+export default async function Page({ searchParams }: PageProps) {
+  const params = (await searchParams) ?? {};
+  const error = first(params.error);
+
   return (
     <div className="mx-auto max-w-4xl space-y-4">
       <Badge tone="info">Owner onboarding</Badge>
       <h1 className="text-3xl font-semibold tracking-[-0.03em]">Add your first pet</h1>
+      {error ? <p className="rounded-2xl border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">{error}</p> : null}
       <Card>
         <form action={createPetAction} className="grid gap-3 sm:grid-cols-2">
           <input className="min-h-12 rounded-2xl border border-border bg-secondary px-4" name="name" placeholder="Pet name" required />
