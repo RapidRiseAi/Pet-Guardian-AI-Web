@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import type { ReactNode } from 'react';
 import { redirect } from 'next/navigation';
 import { AppShell } from '@/components/app-shell/app-shell';

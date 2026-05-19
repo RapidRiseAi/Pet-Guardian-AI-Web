@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { redirect } from 'next/navigation';
 import { Bell, Link2, LockKeyhole, UserRound } from 'lucide-react';
 import {

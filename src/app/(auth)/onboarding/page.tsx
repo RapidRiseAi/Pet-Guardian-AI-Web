@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { redirect } from 'next/navigation';
 import { completeOnboardingAction } from '@/lib/auth/actions';
 import { getSessionContext } from '@/lib/auth/guards';

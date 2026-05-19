@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { MessageCircle, ShieldCheck } from 'lucide-react';
 import { initiateWhatsAppLinkAction } from '@/lib/auth/actions';
 import { getSessionContext } from '@/lib/auth/guards';
