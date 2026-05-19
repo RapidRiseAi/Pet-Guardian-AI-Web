@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import { env } from '@/lib/env';
 import { roleHomeHref } from '@/lib/auth/guards';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { trackServerEvent } from '@/lib/integrations/analytics';
 import type { UserRole } from '@/types/roles';
 
 const passwordHelp = 'Use at least 12 characters with a mix of letters and numbers.';
@@ -136,6 +137,7 @@ export async function signUpAction(formData: FormData) {
   }
 
   if (data.session && data.user) {
+    trackServerEvent('signup_completed_session', { role, referralSource });
     await supabase.from('profiles').upsert({
       id: data.user.id,
       email,

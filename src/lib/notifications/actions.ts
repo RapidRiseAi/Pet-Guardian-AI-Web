@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { trackServerEvent } from '@/lib/integrations/analytics';
 
 export async function createReminderAction(formData: FormData) {
   const supabase = await createSupabaseServerClient();
@@ -25,6 +26,7 @@ export async function createReminderAction(formData: FormData) {
     status: 'scheduled',
   });
 
+  trackServerEvent('reminder_created', { petId, reminderType: String(formData.get('reminderType') ?? 'custom') });
   revalidatePath('/app/reminders');
   redirect('/app/reminders?success=Reminder+created');
 }
