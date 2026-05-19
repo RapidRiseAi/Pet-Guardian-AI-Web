@@ -16,6 +16,7 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
   const error = first(params.error);
   const success = first(params.success);
   const email = first(params.email) ?? '';
+  const referralSource = first(params.ref) ?? '';
 
   return (
     <Card className="w-full max-w-md">
@@ -35,6 +36,7 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
         </div>
       ) : null}
       <form action={signUpAction} className="mt-6 space-y-4">
+        <input type="hidden" name="referralSource" value={referralSource} />
         <label className="block text-sm font-medium">
           Full name
           <input className="mt-2 min-h-12 w-full rounded-2xl border border-border bg-secondary px-4 text-foreground outline-none transition focus:border-primary" name="fullName" autoComplete="name" required />

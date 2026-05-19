@@ -98,6 +98,7 @@ export async function signUpAction(formData: FormData) {
   const email = value(formData, 'email').toLowerCase();
   const password = value(formData, 'password');
   const role = value(formData, 'role') || 'owner';
+  const referralSource = value(formData, 'referralSource') || 'direct';
 
   if (!fullName || !email || !password) {
     authRedirect('/signup', { error: 'Full name, email, and password are required.' });
@@ -123,6 +124,7 @@ export async function signUpAction(formData: FormData) {
           display_name: fullName.split(' ')[0] ?? fullName,
           role,
           signup_source: 'web',
+          referral_source: referralSource,
         },
       },
     }),
