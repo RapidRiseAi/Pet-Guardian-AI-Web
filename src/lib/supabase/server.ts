@@ -1,9 +1,29 @@
+import { createServerClient } from '@supabase/ssr';
 import { createClient } from '@supabase/supabase-js';
-import { env } from '@/lib/env';
+import { cookies } from 'next/headers';
+import { assertPublicEnv, env } from '@/lib/env';
 
-export function createSupabaseServerClient() {
-  return createClient(env.supabaseUrl, env.supabaseAnonKey, {
-    auth: { persistSession: false },
+export async function createSupabaseServerClient() {
+  assertPublicEnv();
+  const cookieStore = await cookies();
+
+  type CookieToSet = { name: string; value: string; options?: Parameters<typeof cookieStore.set>[2] };
+
+  return createServerClient(env.supabaseUrl!, env.supabaseAnonKey!, {
+    cookies: {
+      getAll() {
+        return cookieStore.getAll();
+      },
+      setAll(cookiesToSet: CookieToSet[]) {
+        cookiesToSet.forEach(({ name, value, options }) => {
+          try {
+            cookieStore.set(name, value, options);
+          } catch {
+            // Server Components cannot always write refreshed cookies; middleware handles refresh.
+          }
+        });
+      },
+    },
   });
 }
 
@@ -12,7 +32,9 @@ export function createSupabaseAdminClient() {
     throw new Error('SUPABASE_SERVICE_ROLE_KEY is required for admin Supabase operations.');
   }
 
-  return createClient(env.supabaseUrl, env.supabaseServiceRoleKey, {
+  assertPublicEnv();
+
+  return createClient(env.supabaseUrl!, env.supabaseServiceRoleKey, {
     auth: { persistSession: false },
   });
 }
