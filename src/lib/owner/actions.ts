@@ -23,23 +23,25 @@ export async function createPetAction(formData: FormData) {
   householdId = household?.id ?? null;
 
   if (!householdId) {
-    await supabase.from('profiles').upsert({
+    const { error: profileError } = await supabase.from('profiles').upsert({
       id: user.id,
       email: user.email ?? null,
       display_name: user.user_metadata?.display_name ?? user.user_metadata?.full_name ?? user.email ?? 'PetGuardian user',
       full_name: user.user_metadata?.full_name ?? null,
     }, { onConflict: 'id' });
+    if (profileError) redirect('/app/pets/new?error=Could+not+prepare+your+profile');
 
     const { data: insertedHousehold, error: householdError } = await supabase.from('households').insert({ owner_profile_id: user.id, name: `${name} household` }).select('id').single();
     if (householdError || !insertedHousehold) redirect('/app/pets/new?error=Could+not+create+household');
 
-    await supabase.from('household_members').upsert({
+    const { error: householdMemberError } = await supabase.from('household_members').upsert({
       household_id: insertedHousehold.id,
       profile_id: user.id,
       role: 'owner',
       is_primary: true,
       accepted_at: new Date().toISOString(),
     }, { onConflict: 'household_id,profile_id' });
+    if (householdMemberError) redirect('/app/pets/new?error=Could+not+link+household+owner');
 
     householdId = insertedHousehold.id;
   }
