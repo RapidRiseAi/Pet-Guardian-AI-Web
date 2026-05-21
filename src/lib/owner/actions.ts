@@ -32,10 +32,15 @@ export async function createPetAction(formData: FormData) {
     if (profileError) redirect('/app/pets/new?error=Could+not+prepare+your+profile');
 
     const { data: insertedHousehold, error: householdError } = await supabase.from('households').insert({ owner_profile_id: user.id, name: `${name} household` }).select('id').single();
-    if (householdError || !insertedHousehold) redirect('/app/pets/new?error=Could+not+create+household');
+
+    const resolvedHouseholdId = insertedHousehold?.id ?? (householdError
+      ? (await supabase.from('households').select('id').eq('owner_profile_id', user.id).limit(1).maybeSingle()).data?.id ?? null
+      : null);
+
+    if (!resolvedHouseholdId) redirect('/app/pets/new?error=Could+not+create+household');
 
     const { error: householdMemberError } = await supabase.from('household_members').upsert({
-      household_id: insertedHousehold.id,
+      household_id: resolvedHouseholdId,
       profile_id: user.id,
       role: 'owner',
       is_primary: true,
@@ -43,7 +48,7 @@ export async function createPetAction(formData: FormData) {
     }, { onConflict: 'household_id,profile_id' });
     if (householdMemberError) redirect('/app/pets/new?error=Could+not+link+household+owner');
 
-    householdId = insertedHousehold.id;
+    householdId = resolvedHouseholdId;
   }
 
   const { data: pet, error } = await supabase.from('pets').insert({ household_id: householdId, primary_owner_id: user.id, name, species, breed: String(formData.get('breed') ?? '') || null, sex: String(formData.get('sex') ?? '') || null, microchip_number: String(formData.get('microchipNumber') ?? '') || null, summary: String(formData.get('summary') ?? '') || null }).select('id').single();
