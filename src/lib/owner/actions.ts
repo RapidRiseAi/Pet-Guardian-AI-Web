@@ -19,8 +19,8 @@ export async function createPetAction(formData: FormData) {
   if (!name || !species) redirect('/app/pets/new?error=Name+and+species+are+required');
 
   let householdId: string | null = null;
-  const { data: household } = await supabase.from('households').select('id').eq('owner_profile_id', user.id).maybeSingle();
-  householdId = household?.id ?? null;
+  const { data: households } = await supabase.from('households').select('id').eq('owner_profile_id', user.id).limit(1);
+  householdId = households?.[0]?.id ?? null;
 
   if (!householdId) {
     const { error: profileError } = await supabase.from('profiles').upsert({
@@ -28,14 +28,15 @@ export async function createPetAction(formData: FormData) {
       email: user.email ?? null,
       display_name: user.user_metadata?.display_name ?? user.user_metadata?.full_name ?? user.email ?? 'PetGuardian user',
       full_name: user.user_metadata?.full_name ?? null,
+      status: 'active',
+      role: 'owner',
     }, { onConflict: 'id' });
     if (profileError) redirect('/app/pets/new?error=Could+not+prepare+your+profile');
 
-    const { data: insertedHousehold, error: householdError } = await supabase.from('households').insert({ owner_profile_id: user.id, name: `${name} household` }).select('id').single();
+    const { error: householdInsertError } = await supabase.from('households').insert({ owner_profile_id: user.id, name: `${name} household` });
 
-    const resolvedHouseholdId = insertedHousehold?.id ?? (householdError
-      ? (await supabase.from('households').select('id').eq('owner_profile_id', user.id).limit(1).maybeSingle()).data?.id ?? null
-      : null);
+    const { data: refreshedHouseholds } = await supabase.from('households').select('id').eq('owner_profile_id', user.id).limit(1);
+    const resolvedHouseholdId = refreshedHouseholds?.[0]?.id ?? null;
 
     if (!resolvedHouseholdId) redirect('/app/pets/new?error=Could+not+create+household');
 
