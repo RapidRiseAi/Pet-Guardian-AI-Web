@@ -33,7 +33,7 @@ export async function createPetAction(formData: FormData) {
     }, { onConflict: 'id' });
     if (profileError) redirect('/app/pets/new?error=Could+not+prepare+your+profile');
 
-    const { error: householdInsertError } = await supabase.from('households').insert({ owner_profile_id: user.id, name: `${name} household` });
+    await supabase.from('households').insert({ owner_profile_id: user.id, name: `${name} household` });
 
     const { data: refreshedHouseholds } = await supabase.from('households').select('id').eq('owner_profile_id', user.id).limit(1);
     const resolvedHouseholdId = refreshedHouseholds?.[0]?.id ?? null;
