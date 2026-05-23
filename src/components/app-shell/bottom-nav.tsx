@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { mobileNavItems } from '@/config/navigation';
 import { cn } from '@/lib/utils';
+import type { UserRole } from '@/types/roles';
 import { shellIcons, type ShellIcon } from './icons';
 
 function isActive(pathname: string, href: string) {
@@ -11,13 +12,14 @@ function isActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function BottomNav() {
+export function BottomNav({ role }: { role: UserRole | null }) {
   const pathname = usePathname();
+  const visibleItems = mobileNavItems.filter((item) => !item.roles || (role ? item.roles.includes(role) : false));
 
   return (
     <nav className="safe-bottom fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background/[0.94] px-2 pt-2 backdrop-blur-xl md:hidden">
       <div className="mx-auto grid max-w-md grid-cols-5 gap-1">
-        {mobileNavItems.map((item) => {
+        {visibleItems.map((item) => {
           const Icon = shellIcons[item.icon as ShellIcon];
           const active = isActive(pathname, item.href);
           return (

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { appSidebarSections, roleWorkspaceMeta } from '@/config/navigation';
 import { cn } from '@/lib/utils';
+import type { UserRole } from '@/types/roles';
 import { shellIcons, type ShellIcon } from './icons';
 
 function isActive(pathname: string, href: string) {
@@ -11,8 +12,16 @@ function isActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function Sidebar() {
+export function Sidebar({ role }: { role: UserRole | null }) {
   const pathname = usePathname();
+  const visibleSections = appSidebarSections
+    .filter((section) => !section.role || section.role === role)
+    .map((section) => ({
+      ...section,
+      items: section.items.filter((item) => !item.roles || (role ? item.roles.includes(role) : false)),
+    }))
+    .filter((section) => section.items.length > 0);
+  const workspace = role ? roleWorkspaceMeta[role] : null;
 
   return (
     <aside className="sticky top-0 hidden h-screen w-72 shrink-0 border-r border-border bg-card/70 p-4 backdrop-blur-xl md:flex md:flex-col">
@@ -28,13 +37,11 @@ export function Sidebar() {
       <div className="mt-5 rounded-3xl border border-primary/20 bg-primary/10 p-3">
         <p className="text-xs uppercase tracking-[0.18em] text-primary">Role-safe shell</p>
         <p className="mt-1 text-sm text-muted-foreground">
-          {Object.values(roleWorkspaceMeta)
-            .map((role) => role.label.split(' ')[0])
-            .join(' • ')}
+          {workspace?.label ?? 'Workspace'}
         </p>
       </div>
       <div className="mt-6 flex-1 space-y-6 overflow-y-auto pr-1">
-        {appSidebarSections.map((section) => (
+        {visibleSections.map((section) => (
           <div key={section.title}>
             <div className="flex items-center justify-between px-3">
               <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
