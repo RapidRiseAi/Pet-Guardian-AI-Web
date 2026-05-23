@@ -18,24 +18,27 @@ export async function createPetAction(formData: FormData) {
   const species = String(formData.get('species') ?? '').trim();
   if (!name || !species) redirect('/app/pets/new?error=Name+and+species+are+required');
 
+  const { error: ensureProfileError } = await supabase.from('profiles').upsert({
+    id: user.id,
+    email: user.email ?? null,
+    display_name: user.user_metadata?.display_name ?? user.user_metadata?.full_name ?? user.email ?? 'PetGuardian user',
+    full_name: user.user_metadata?.full_name ?? null,
+    status: 'active',
+    role: 'owner',
+  }, { onConflict: 'id' });
+  if (ensureProfileError) redirect('/app/pets/new?error=Could+not+prepare+your+profile');
+
   let householdId: string | null = null;
-  const { data: households } = await supabase.from('households').select('id').eq('owner_profile_id', user.id).limit(1);
+  const { data: households, error: householdsError } = await supabase.from('households').select('id').eq('owner_profile_id', user.id).limit(1);
+  if (householdsError) redirect('/app/pets/new?error=Could+not+load+household');
   householdId = households?.[0]?.id ?? null;
 
   if (!householdId) {
-    const { error: profileError } = await supabase.from('profiles').upsert({
-      id: user.id,
-      email: user.email ?? null,
-      display_name: user.user_metadata?.display_name ?? user.user_metadata?.full_name ?? user.email ?? 'PetGuardian user',
-      full_name: user.user_metadata?.full_name ?? null,
-      status: 'active',
-      role: 'owner',
-    }, { onConflict: 'id' });
-    if (profileError) redirect('/app/pets/new?error=Could+not+prepare+your+profile');
+    const { error: householdInsertError } = await supabase.from('households').insert({ owner_profile_id: user.id, name: `${name} household` });
+    if (householdInsertError) redirect('/app/pets/new?error=Could+not+create+household');
 
-    await supabase.from('households').insert({ owner_profile_id: user.id, name: `${name} household` });
-
-    const { data: refreshedHouseholds } = await supabase.from('households').select('id').eq('owner_profile_id', user.id).limit(1);
+    const { data: refreshedHouseholds, error: refreshedHouseholdsError } = await supabase.from('households').select('id').eq('owner_profile_id', user.id).limit(1);
+    if (refreshedHouseholdsError) redirect('/app/pets/new?error=Could+not+load+household');
     const resolvedHouseholdId = refreshedHouseholds?.[0]?.id ?? null;
 
     if (!resolvedHouseholdId) redirect('/app/pets/new?error=Could+not+create+household');
@@ -52,8 +55,21 @@ export async function createPetAction(formData: FormData) {
     householdId = resolvedHouseholdId;
   }
 
+
+  const { error: ensureHouseholdMemberError } = await supabase.from('household_members').upsert({
+    household_id: householdId,
+    profile_id: user.id,
+    role: 'owner',
+    is_primary: true,
+    accepted_at: new Date().toISOString(),
+  }, { onConflict: 'household_id,profile_id' });
+  if (ensureHouseholdMemberError) redirect('/app/pets/new?error=Could+not+link+household+owner');
+
   const { data: pet, error } = await supabase.from('pets').insert({ household_id: householdId, primary_owner_id: user.id, name, species, breed: String(formData.get('breed') ?? '') || null, sex: String(formData.get('sex') ?? '') || null, microchip_number: String(formData.get('microchipNumber') ?? '') || null, summary: String(formData.get('summary') ?? '') || null }).select('id').single();
-  if (error || !pet) redirect('/app/pets/new?error=Could+not+create+pet+profile');
+  if (error || !pet) {
+    const hint = error?.code ? `%28${encodeURIComponent(error.code)}%29` : '';
+    redirect(`/app/pets/new?error=Could+not+create+pet+profile${hint}`);
+  }
 
   await supabase.from('pet_care_profiles').upsert({ pet_id: pet.id, created_by: user.id, feeding_notes: String(formData.get('feedingNotes') ?? '') || null, walking_notes: String(formData.get('walkingNotes') ?? '') || null, medication_notes: String(formData.get('medicationNotes') ?? '') || null, behaviour_notes: String(formData.get('behaviourNotes') ?? '') || null, allergy_notes: String(formData.get('allergyNotes') ?? '') || null, emergency_notes: String(formData.get('emergencyNotes') ?? '') || null }, { onConflict: 'pet_id' });
   await supabase.from('pet_medical_profiles').upsert({ pet_id: pet.id, created_by: user.id, chronic_conditions: String(formData.get('chronicConditions') ?? '') || null, allergies: String(formData.get('allergies') ?? '') || null, medical_notes: String(formData.get('medicalNotes') ?? '') || null }, { onConflict: 'pet_id' });
