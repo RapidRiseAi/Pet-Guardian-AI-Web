@@ -11,5 +11,5 @@ export default async function ProtectedAppLayout({ children }: { children: React
   if (!context.userId) redirect('/login');
   if (!context.onboardingComplete) redirect('/onboarding');
 
-  return <AppShell>{children}</AppShell>;
+  return <AppShell role={context.role}>{children}</AppShell>;
 }
