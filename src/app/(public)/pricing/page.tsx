@@ -6,22 +6,22 @@ import { Card, GlassCard } from '@/components/ui/card';
 const plans = [
   {
     name: 'Starter',
-    price: '$0',
-    cadence: '/month',
+    price: 'R40',
+    cadence: ' a month',
     summary: 'For one pet and basic care coordination.',
     features: ['1 pet profile', 'Core reminders', 'Basic document storage', 'Sitter sharing'],
   },
   {
     name: 'Plus',
-    price: '$12',
-    cadence: '/month',
+    price: 'R120',
+    cadence: ' a month',
     summary: 'For multi-pet households and richer workflows.',
     features: ['Up to 5 pets', 'Advanced reminders', 'QR sharing controls', 'Clinic request workflows'],
   },
   {
     name: 'Pro Care',
-    price: '$24',
-    cadence: '/month',
+    price: 'R300',
+    cadence: ' a month',
     summary: 'For power users and partner-led care networks.',
     features: ['Unlimited pets', 'Priority support', 'Assistant channel preferences', 'Audit-ready timeline'],
   },
